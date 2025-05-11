@@ -8,7 +8,7 @@ class TravelPackage{
 
     this.name=name;
     this.price=price;
-    this.rate=rate;
+    this.rating=rating;
 
   }
 }
