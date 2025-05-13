@@ -56,7 +56,7 @@ class TripPlanner{
         sc.nextLine();
         System.out.println("Enter the source location:");
         String src = sc.nextLine();
-        System.out.println("Enter the destination location:");
+        System.out.println("Enter a location enroute to your destination:");
         String dest = sc.nextLine();
         adjList.putIfAbsent(src,new ArrayList<>());
         adjList.putIfAbsent(dest,new ArrayList<>());
@@ -72,15 +72,51 @@ class TripPlanner{
      
   }
 
-  //Sorts travel travelPackages by rating
+  //Sorts travel travelPackages by rating using Heap sort
   public static void SortTravelPackages(Destination dest) {
     List<TravelPackage> sortedPackage = new ArrayList<>(dest.travelPackage);
-    sortedPackage.sort((a,b)->Float.compare(b.rating,a.rating));
-    System.out.println("Sorting travel packages by rating");
+
+    int n = sortedPackage.size();
+
+    for(int i=n/2-1;i>=0;i--){
+      heapify(sortedPackage,n,i);
+    }
+
+    for(int i=n-1;i>=0;i--){
+      TravelPackage temp = sortedPackage.get(0);
+      sortedPackage.set(0,sortedPackage.get(i));
+      sortedPackage.set(i,temp);
+
+      heapify(sortedPackage,i,0);
+    }
     for(TravelPackage tp: sortedPackage){
       System.out.println("Package Name:"+tp.name+"\nPackage rating:"+tp.rating+"\nPackage Price:"+tp.price);
       System.out.println("=================================");
     }
+  }
+
+  public static void heapify(List<TravelPackage> sortedTp,int n, int i){
+
+    int largest = i;
+    int left = 2*i+1;
+    int right = 2*i+2;
+
+    if(left<n && sortedTp.get(left).rating>sortedTp.get(largest).rating){
+      largest = left;
+    }
+
+    if(right<n && sortedTp.get(right).rating>sortedTp.get(largest).rating){
+      largest=right;
+    }
+    
+    if(largest!=i){
+      TravelPackage tp = sortedTp.get(i);
+      sortedTp.set(i,sortedTp.get(largest));
+      sortedTp.set(largest,tp);
+
+      heapify(sortedTp,n,largest);
+    }
+
   }
 
   //Calculates shortest travel routes between cities
@@ -165,6 +201,10 @@ class TripPlanner{
         dest = entry.getValue();
       }
     }
+    if(dest==null){
+      System.out.println("Sorry! The destination does not exist");
+      return;
+    }
     System.out.println("Select the Travel Package you want:");
     tp.SortTravelPackages(dest);
     System.out.println("Enter the Travel Package name:");
@@ -186,6 +226,7 @@ class TripPlanner{
     for(Map.Entry<String,Destination> entry: map.entrySet()){
       OrderMap.put(entry.getKey(),entry.getValue().dest_rating);
     }
+    //Using min heap to extract the most rated destinations
     PriorityQueue<Map.Entry<String,Float>> queue = new PriorityQueue<>(Map.Entry.comparingByValue());
     for(Map.Entry<String,Float> entry : OrderMap.entrySet()){
       queue.add(entry);
@@ -194,6 +235,7 @@ class TripPlanner{
       }
     } 
     int i=1;
+    //Recommends the top 3 destinations
     for(Map.Entry<String,Float> entry: queue){
       System.out.println(i+".Destination:"+entry.getKey()+" Rating:"+entry.getValue());
       i++;
@@ -245,9 +287,10 @@ class TripPlanner{
       else if(UserRole==2){
         //Customer can search, book etc
         System.out.println("Recommendation of Destinations:");
+        System.out.println("===========================================");
         tp.OrderDestinationsByRating();
         System.out.println("1. Search\n2. Book");
-        System.out.println("Enter the operation that you want to perform:");
+        System.out.println("Enter the operation that you want to perform:(1/2):");
         int option = sc.nextInt(); 
         if(option == 1){
           tp.SearchDestinations();
