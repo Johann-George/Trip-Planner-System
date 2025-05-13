@@ -1,13 +1,15 @@
+import java.util.*;
+
 class Destination{
 
-  int dest_rating;
-  int dest_price;
-  List<TravelPackage> package = new ArrayList<>();
+  float dest_rating;
+  List<TravelPackage> travelPackage = new ArrayList<>();
+  HashMap<String,List<String>> adjList = new HashMap<>();
 
-  public Destination(int dest_rating, int dest_price, List<TravelPackage> package){
+  public Destination(float dest_rating, List<TravelPackage> travelPackage,HashMap<String,List<String>> adjList){
     this.dest_rating = dest_rating;
-    this.dest_price = dest_price;
-    this.package = package;
+    this.travelPackage= travelPackage;
+    this.adjList = adjList;
   }
 
 }
